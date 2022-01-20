@@ -1,31 +1,31 @@
+import { Category } from '../models/Category'
+
 interface ICategoryDTO {
   name: string
   description: string
 }
 
-import { Category } from '../models/Category'
-
 class CategoryRepository {
-	private categories: Category[]
+  private categories: Category[]
 
-	constructor() {
-		this.categories = []
-	}
+  constructor() {
+    this.categories = []
+  }
 
-	list(): Category[] {
-		return this.categories
-	}
+  list(): Category[] {
+    return this.categories
+  }
 
-	create({ name, description }: ICategoryDTO): void {
-		const category = new Category(name, description)
-		this.categories.push(category)
-	}
+  create({ name, description }: ICategoryDTO): void {
+    const category = new Category(name, description)
+    this.categories.push(category)
+  }
 
-	findByName(name: string): Category | undefined {
-		const category = this.categories.find(category => category.name === name)
+  findByName(name: string): Category | undefined {
+    const category = this.categories.find((category) => category.name === name)
 
-		return category
-	}
+    return category
+  }
 }
 
 export { CategoryRepository }

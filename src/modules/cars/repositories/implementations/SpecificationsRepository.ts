@@ -6,9 +6,18 @@ import {
 
 class SpecificationsRepository implements ISpecificationsRepository {
   private specifications: Specification[]
+  private static IMPLEMENTATION: SpecificationsRepository
 
-  constructor() {
+  private constructor() {
     this.specifications = []
+  }
+
+  public static getImplementation() {
+    if (!SpecificationsRepository.IMPLEMENTATION) {
+      SpecificationsRepository.IMPLEMENTATION = new SpecificationsRepository()
+    }
+
+    return SpecificationsRepository.IMPLEMENTATION
   }
 
   list(): Specification[] {

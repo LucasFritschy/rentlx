@@ -8,12 +8,18 @@ class CreateCategoryController {
     this.createCategoryUseCase = createCategoryUseCase
   }
 
-  handle(request: Request, response: Response) {
+  handle(request: Request, response: Response): Response {
     const { name, description } = request.body
 
-    const category = this.createCategoryUseCase.execute({ name, description })
-
-    return response.status(201).json({ category })
+    try {
+      const category = this.createCategoryUseCase.execute({ name, description })
+      return response.status(201).json({ category })
+    } catch (error) {
+      if (error instanceof Error) {
+        return response.status(501).json({ error: error.message })
+      }
+    }
+    return response.status(500).json({ error: 'something went wrong' })
   }
 }
 

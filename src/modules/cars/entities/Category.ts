@@ -13,7 +13,7 @@ class Category {
   description: string
 
   @CreateDateColumn()
-  created_at: Date
+  created_at!: Date
 
   constructor(name: string, description: string) {
     if (!this.id) {
@@ -21,7 +21,6 @@ class Category {
     }
     this.name = name
     this.description = description
-    this.created_at = new Date()
   }
 }
 

@@ -8,11 +8,14 @@ class CreateCategoryController {
     this.createCategoryUseCase = createCategoryUseCase
   }
 
-  handle(request: Request, response: Response): Response {
+  async handle(request: Request, response: Response): Promise<Response> {
     const { name, description } = request.body
 
     try {
-      const category = this.createCategoryUseCase.execute({ name, description })
+      const category = await this.createCategoryUseCase.execute({
+        name,
+        description,
+      })
       return response.status(201).json({ category })
     } catch (error) {
       if (error instanceof Error) {

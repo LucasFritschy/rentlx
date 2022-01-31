@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto'
 import { MigrationInterface, QueryRunner, Table } from 'typeorm'
 
 export class CreateCategories1643322366987 implements MigrationInterface {

@@ -22,7 +22,7 @@ class CategoriesRepository implements ICategoriesRepository {
   }
 
   async findByName(name: string): Promise<Category | undefined> {
-    const category = this.repository.findOne({ where: { name } })
+    const category = this.repository.findOne({ name })
 
     if (!category) {
       throw new Error('user not found')

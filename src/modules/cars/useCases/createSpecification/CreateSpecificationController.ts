@@ -18,7 +18,7 @@ class CreateSpecificationController {
       })
     } catch (error) {
       if (error instanceof Error) {
-        return response.status(501).json({ error: error.message })
+        return response.status(500).json({ error: error.message })
       }
     }
 

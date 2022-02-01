@@ -11,9 +11,9 @@ class ImportCategoryController {
 
     if (file) {
       await importCategoryUseCase.execute(file)
-      return response.json({ message: 'ok' })
+      return response.status(201).json({ message: 'ok' })
     }
-    return response.json({ error: 'something went wrong' })
+    return response.status(500).json({ error: 'invalid csv file' })
   }
 }
 

@@ -5,7 +5,7 @@ import { AppError } from '../errors/AppError'
 import { UsersRepository } from '../modules/accounts/repositories/implementations/UsersRepository'
 
 interface IPayload {
-  sub: string
+  user_id: string
 }
 
 async function ensureAuthenticated(
@@ -22,17 +22,21 @@ async function ensureAuthenticated(
   const [, jwtToken] = authToken.split(' ')
 
   try {
-    const { sub } = verify(
+    const { user_id } = verify(
       jwtToken,
       'e9693b3c5381997376b678fbaf6c2e59'
     ) as IPayload
 
     const usersRepository = new UsersRepository()
 
-    const user = await usersRepository.findById(sub)
+    const user = await usersRepository.findById(user_id)
 
     if (!user) {
       throw new AppError('User not found')
+    }
+
+    request.user = {
+      id: user_id,
     }
 
     next()

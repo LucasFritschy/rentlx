@@ -25,10 +25,6 @@ class CategoriesRepository implements ICategoriesRepository {
   async findByName(name: string): Promise<Category | undefined> {
     const category = await this.repository.findOne({ name })
 
-    if (!category) {
-      throw new AppError('user not found')
-    }
-
     return category
   }
 }

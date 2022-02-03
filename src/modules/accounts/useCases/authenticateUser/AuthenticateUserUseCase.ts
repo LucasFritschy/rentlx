@@ -1,29 +1,58 @@
-import { Request, Response } from 'express'
-import { container } from 'tsyringe'
+import { compare } from 'bcrypt'
+import { sign } from 'jsonwebtoken'
+import { inject, injectable } from 'tsyringe'
 
-import { AuthenticateUserUseCase } from './AuthenticateUserController'
+import { AppError } from '../../../../errors/AppError'
+import { IUsersRepository } from '../../repositories/IUsersRepository'
 
-class AuthenticateUserController {
-  async handle(request: Request, response: Response): Promise<Response> {
-    const authenticateUserUseCase = container.resolve(AuthenticateUserUseCase)
+interface IRequest {
+  email: string
+  password: string
+}
 
-    const { email, password } = request.body
+interface IResponse {
+  user: {
+    name: string
+    email: string
+  }
+  token: string
+}
 
-    try {
-      const authResponse = await authenticateUserUseCase.execute({
-        email,
-        password,
-      })
+@injectable()
+class AuthenticateUserUseCase {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository
+  ) {}
 
-      return response.json(authResponse)
-    } catch (error) {
-      if (error instanceof Error) {
-        return response.status(500).json(error.message)
-      }
+  async execute({ email, password }: IRequest): Promise<IResponse> {
+    const user = await this.usersRepository.findByEmail(email)
+
+    if (!user) {
+      throw new AppError('Incorrect user or password', 401)
     }
 
-    return response.status(500).json({ error: 'something went wrong' })
+    const passwordsMatch = await compare(password, user.password)
+
+    if (!passwordsMatch) {
+      throw new AppError('Incorrect user or password', 401)
+    }
+
+    const token = sign({}, 'e9693b3c5381997376b678fbaf6c2e59', {
+      subject: user.id,
+      expiresIn: '1d',
+    })
+
+    const authResponse: IResponse = {
+      user: {
+        name: user.name,
+        email: user.email,
+      },
+      token,
+    }
+
+    return authResponse
   }
 }
 
-export { AuthenticateUserController }
+export { AuthenticateUserUseCase }

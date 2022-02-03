@@ -1,5 +1,6 @@
 import { getRepository, Repository } from 'typeorm'
 
+import { AppError } from '../../../../errors/AppError'
 import { Category } from '../../entities/Category'
 import { ICategoriesRepository, ICategoryDTO } from '../ICategoriesRepository'
 
@@ -22,10 +23,10 @@ class CategoriesRepository implements ICategoriesRepository {
   }
 
   async findByName(name: string): Promise<Category | undefined> {
-    const category = this.repository.findOne({ name })
+    const category = await this.repository.findOne({ name })
 
     if (!category) {
-      throw new Error('user not found')
+      throw new AppError('user not found')
     }
 
     return category

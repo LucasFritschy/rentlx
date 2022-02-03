@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { container } from 'tsyringe'
 
+import { AppError } from '../../../../errors/AppError'
 import { ImportCategoryUseCase } from './ImportCategoryUseCase'
 
 class ImportCategoryController {
@@ -9,11 +10,12 @@ class ImportCategoryController {
 
     const importCategoryUseCase = container.resolve(ImportCategoryUseCase)
 
-    if (file) {
-      await importCategoryUseCase.execute(file)
-      return response.status(201).json({ message: 'ok' })
+    if (!file) {
+      throw new AppError('csv file not found')
     }
-    return response.status(500).json({ error: 'invalid csv file' })
+
+    await importCategoryUseCase.execute(file)
+    return response.status(201).json({ message: 'categories imported' })
   }
 }
 

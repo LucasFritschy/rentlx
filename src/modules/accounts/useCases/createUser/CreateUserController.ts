@@ -9,13 +9,7 @@ class CreateUserController {
 
     const data = request.body
 
-    try {
-      await createUserUseCase.execute(data)
-    } catch (error) {
-      if (error instanceof Error) {
-        return response.status(500).json({ error: error.message })
-      }
-    }
+    await createUserUseCase.execute(data)
 
     return response.status(201).send()
   }

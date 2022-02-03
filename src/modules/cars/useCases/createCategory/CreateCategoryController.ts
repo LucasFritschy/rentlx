@@ -9,17 +9,12 @@ class CreateCategoryController {
 
     const createCategoryUseCase = container.resolve(CreateCategoryUseCase)
 
-    try {
-      const category = await createCategoryUseCase.execute({
-        name,
-        description,
-      })
-      return response.status(201).json({ category })
-    } catch (error) {
-      if (error instanceof Error) {
-        return response.status(500).json({ error: error.message })
-      }
-    }
+    const category = await createCategoryUseCase.execute({
+      name,
+      description,
+    })
+    return response.status(201).json({ category })
+
     return response.status(500).json({ error: 'something went wrong' })
   }
 }

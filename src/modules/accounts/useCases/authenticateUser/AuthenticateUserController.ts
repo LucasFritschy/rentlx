@@ -1,57 +1,23 @@
-import { compare } from 'bcrypt'
-import { sign } from 'jsonwebtoken'
-import { inject, injectable } from 'tsyringe'
+import { Request, Response } from 'express'
+import { container } from 'tsyringe'
 
-import { IUsersRepository } from '../../repositories/IUsersRepository'
+import { AuthenticateUserUseCase } from './AuthenticateUserUseCase'
 
-interface IRequest {
-  email: string
-  password: string
-}
+class AuthenticateUserController {
+  async handle(request: Request, response: Response): Promise<Response> {
+    const authenticateUserUseCase = container.resolve(AuthenticateUserUseCase)
 
-interface IResponse {
-  user: {
-    name: string
-    email: string
-  }
-  token: string
-}
+    const { email, password } = request.body
 
-@injectable()
-class AuthenticateUserUseCase {
-  constructor(
-    @inject('UsersRepository')
-    private usersRepository: IUsersRepository
-  ) {}
-
-  async execute({ email, password }: IRequest): Promise<IResponse> {
-    const user = await this.usersRepository.findByEmail(email)
-
-    if (!user) {
-      throw new Error('Incorrect user or password')
-    }
-
-    const passwordsMatch = await compare(password, user.password)
-
-    if (!passwordsMatch) {
-      throw new Error('Incorrect user or password')
-    }
-
-    const token = sign({}, 'e9693b3c5381997376b678fbaf6c2e59', {
-      subject: user.id,
-      expiresIn: '1d',
+    const authResponse = await authenticateUserUseCase.execute({
+      email,
+      password,
     })
 
-    const authResponse: IResponse = {
-      user: {
-        name: user.name,
-        email: user.email,
-      },
-      token,
-    }
+    return response.json(authResponse)
 
-    return authResponse
+    return response.status(500).json({ error: 'something went wrong' })
   }
 }
 
-export { AuthenticateUserUseCase }
+export { AuthenticateUserController }

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 import { verify } from 'jsonwebtoken'
 
+import { AppError } from '../errors/AppError'
 import { UsersRepository } from '../modules/accounts/repositories/implementations/UsersRepository'
 
 interface IPayload {
@@ -15,7 +16,7 @@ async function ensureAuthenticated(
   const authToken = request.headers.authorization
 
   if (!authToken) {
-    throw new Error('Authentication token not found')
+    throw new AppError('Authentication token not found', 401)
   }
 
   const [, jwtToken] = authToken.split(' ')
@@ -31,12 +32,12 @@ async function ensureAuthenticated(
     const user = await usersRepository.findById(sub)
 
     if (!user) {
-      throw new Error('User not found')
+      throw new AppError('User not found')
     }
 
     next()
   } catch (error) {
-    throw new Error('Invalid jwt token')
+    throw new AppError('Invalid jwt token', 401)
   }
 }
 
